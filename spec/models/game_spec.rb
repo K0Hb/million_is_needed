@@ -114,4 +114,60 @@ RSpec.describe Game, type: :model do
     end
   end
 
+
+
+  describe '#answer_current_question' do
+    context 'answer correct' do
+      it 'answer -> true; game_w_questions.finished? -> true' do
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
+
+        expect(answer).to be_truthy
+        expect(game_w_questions.current_level).to eq(level + 1)
+      end
+    end
+
+    context 'answer uncorrect' do
+      it 'answer -> false; game_w_questions.finished? -> false' do
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        answer = game_w_questions.answer_current_question!('g')
+
+        expect(answer).to be_falsey
+        expect(game_w_questions.finished?).to be_truthy
+      end
+    end
+
+    context 'final answer and prize = 1 million' do
+      it 'answer -> true; prize -> million; status -> :won; finished? -> true; balance -> million; current_level-> 14(max)' do
+        game_w_questions.current_level = Question::QUESTION_LEVELS.max
+        level = game_w_questions.current_level
+        q = game_w_questions.current_game_question
+
+        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
+        prize = game_w_questions.prize
+
+        expect(answer).to be_truthy
+        expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
+        expect(game_w_questions.status).to eq :won
+        expect(game_w_questions.finished?).to be_truthy
+        expect(user.balance).to eq prize
+        expect(game_w_questions.current_level).to eq(level + 1)
+      end
+    end
+
+    context 'answer timeout' do
+      it 'answer -> false' do
+        game_w_questions.created_at = 1.hour.ago
+        q = game_w_questions.current_game_question
+
+        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
+
+        expect(answer).to be_falsey
+      end
+    end
+  end
 end
