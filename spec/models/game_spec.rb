@@ -102,7 +102,7 @@ RSpec.describe Game, type: :model do
 
   describe '#previous_level' do
     context 'check correct work previous_level' do
-      it 'previous_level not correctly' do
+      it 'previous_level correctly' do
         level = game_w_questions.current_level - 1
         expect(game_w_questions.previous_level).to eq level
       end
@@ -117,8 +117,8 @@ RSpec.describe Game, type: :model do
   describe '#answer_current_question' do
     let(:q) { game_w_questions.current_game_question }
     let(:level) { game_w_questions.current_level }
-    context 'answer correct' do
-      it 'answer -> true; current_level -> level(next), game_w_questions.finished? -> true' do
+    context 'game is not stopped, the answer is correct' do
+      it 'answer correct' do
         answer = game_w_questions.answer_current_question!(q.correct_answer_key)
 
         expect(answer).to be_truthy
@@ -127,8 +127,8 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'answer uncorrect' do
-      it 'answer -> false; current_level -> level, game_w_questions.finished? -> true' do
+    context 'game is stopped, the answer is incorrect' do
+      it 'answer uncorrect' do
         answer = game_w_questions.answer_current_question!('g')
 
         expect(answer).to be_falsey
@@ -137,8 +137,8 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'answer timeout' do
-      it 'answer -> false; current_level -> level, game_w_questions.finished? -> true' do
+    context 'game is stopped, the time limit for the response has been exceeded' do
+      it 'answer timout' do
         game_w_questions.created_at = 1.hour.ago
         answer = game_w_questions.answer_current_question!(q.correct_answer_key)
 
@@ -148,8 +148,8 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'final answer and prize = 1 million' do
-      it 'answer -> true; prize -> million; status -> :won; finished? -> true; balance -> million; current_level-> 14(max)' do
+    context 'last answer to the question and receiving the final prize' do
+      it 'final answer and prize 1 million' do
         game_w_questions.current_level = Question::QUESTION_LEVELS.max
         answer = game_w_questions.answer_current_question!(q.correct_answer_key)
         prize = game_w_questions.prize
