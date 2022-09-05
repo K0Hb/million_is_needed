@@ -21,11 +21,11 @@ RSpec.describe GameQuestion, type: :model do
   describe '#answer_correct?' do
     context 'check correct work answer_correct?' do
       it 'return true' do
-        expect(game_question.answer_correct?('b')).to be_truthy
+        expect(game_question.answer_correct?('b')).to be true
       end
 
       it 'return false' do
-        expect(game_question.answer_correct?('c')).to be_falsey
+        expect(game_question.answer_correct?('c')).to be false
       end
     end
   end
