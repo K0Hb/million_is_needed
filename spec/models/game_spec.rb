@@ -114,8 +114,6 @@ RSpec.describe Game, type: :model do
     end
   end
 
-
-
   describe '#answer_current_question' do
     let(:q) { game_w_questions.current_game_question }
     let(:level) { game_w_questions.current_level }
