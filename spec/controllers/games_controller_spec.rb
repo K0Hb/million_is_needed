@@ -53,18 +53,6 @@ RSpec.describe GamesController, type: :controller do
       end
   end
 
-  describe '#show game (user -> anon)' do
-    context 'anon show game' do
-      it 'status != 200; flash -> true; response -> redirect_to(new_user_session_path)' do
-        get :show, id: game_w_questions.id
-
-        expect(response.status).not_to eq(200)
-        expect(response).to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to be
-      end
-    end
-  end
-
   describe '#show game (user -> user)' do
     before(:each) { sign_in user }
 
@@ -108,6 +96,51 @@ RSpec.describe GamesController, type: :controller do
         expect(user.balance).to eq(200)
         expect(response).to redirect_to(user_path(user))
         expect(flash[:warning]).to be
+      end
+    end
+  end
+
+  describe 'group test anonymous user' do
+    context '#show game' do
+      it 'status != 200; flash -> true' do
+        get :show, id: game_w_questions.id
+
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context '#create' do
+      it 'status != 200; flash -> true; game -> nil' do
+        expect { post :create }.to change(Game, :count).by(0)
+
+        game = assigns(:game)
+
+        expect(game).to be nil
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context '#answer' do
+      it 'status != 200; flash -> true' do
+        put :answer, id: game_w_questions.id
+
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
+      end
+    end
+
+    context '#take_money' do
+      it 'status != 200; flash -> true' do
+        put :take_money, id: game_w_questions.id
+
+        expect(response.status).not_to eq(200)
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to be
       end
     end
   end
