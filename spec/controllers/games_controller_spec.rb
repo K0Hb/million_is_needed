@@ -51,6 +51,20 @@ RSpec.describe GamesController, type: :controller do
         expect(response).to redirect_to(game_path(game))
         expect(flash.empty?).to be_truthy
       end
+
+    context 'answer wrong' do
+      it 'finished? - false; flash -> true' do
+        question = game_w_questions.current_game_question
+        wrong_answer = (question.variants.keys - [question.correct_answer_key]).sample
+
+        put :answer, id: game_w_questions.id, letter: wrong_answer
+        game = assigns(:game)
+
+        expect(game.finished?).to be true
+        expect(response).to redirect_to user_path(user)
+        expect(flash.any?).to be true
+      end
+    end
   end
 
   describe '#show game (user -> user)' do
