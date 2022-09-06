@@ -142,6 +142,32 @@ class Game < ActiveRecord::Base
     finish_game!(previous_level > -1 ? PRIZES[previous_level] : 0, false)
   end
 
+  def use_help(help_type)
+    case help_type
+    when :fifty_fifty
+      unless fifty_fifty_used
+        # ActiveRecord метод toggle! переключает булевое поле сразу в базе
+        toggle!(:fifty_fifty_used)
+        current_game_question.add_fifty_fifty
+        return true
+      end
+    when :audience_help
+      unless audience_help_used
+        toggle!(:audience_help_used)
+        current_game_question.add_audience_help
+        return true
+      end
+    when :friend_call
+      unless friend_call_used
+        toggle!(:friend_call_used)
+        current_game_question.add_friend_call
+        return true
+      end
+    end
+
+    false
+  end
+
   # Результат игры status, возвращает, одно из:
   #
   # :fail — игра проиграна из-за неверного вопроса

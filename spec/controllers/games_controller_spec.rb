@@ -77,7 +77,7 @@ RSpec.describe GamesController, type: :controller do
 
         expect(response.status).to eq(200)
         expect(response).to render_template('show')
-        expect(game.finished?).to be_falsey
+        expect(game.finished?).to be false
         expect(game.user).to eq(user)
         expect(game.status).to eq(:in_progress)
       end
@@ -91,6 +91,22 @@ RSpec.describe GamesController, type: :controller do
         expect(response.status).not_to eq(200)
         expect(response).to redirect_to(root_path)
         expect(flash[:alert]).to be
+      end
+    end
+
+    context 'user uses audience help'do
+      it 'use audience help, redirect to game_path and game continues' do
+        expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
+        expect(game_w_questions.audience_help_used).to be false
+
+        put :help, id: game_w_questions.id, help_type: :audience_help
+        game = assigns(:game)
+
+        expect(game.finished?).to be false
+        expect(game.audience_help_used).to be true
+        expect(game.current_game_question.help_hash[:audience_help]).to be
+        expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+        expect(response).to redirect_to(game_path(game))
       end
     end
   end

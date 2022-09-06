@@ -49,4 +49,19 @@ RSpec.describe GameQuestion, type: :model do
       end
     end
   end
+
+  describe '#help_hash' do
+    context '#add_audience_help' do
+      it 'audience_help has correct keys' do
+        expect(game_question.help_hash).not_to include(:audience_help)
+
+        game_question.add_audience_help
+
+        expect(game_question.help_hash).to include(:audience_help)
+
+        ah = game_question.help_hash[:audience_help]
+        expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
+      end
+    end
+  end
 end
