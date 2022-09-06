@@ -63,5 +63,19 @@ RSpec.describe GameQuestion, type: :model do
         expect(ah.keys).to contain_exactly('a', 'b', 'c', 'd')
       end
     end
+
+    context '#add_fifty_fifty' do
+      it 'there are 2 answers left and one of them is correct' do
+        expect(game_question.help_hash).not_to include(:fifty_fifty)
+
+        game_question.add_fifty_fifty
+
+        expect(game_question.help_hash).to include(:fifty_fifty)
+        ff = game_question.help_hash[:fifty_fifty]
+
+        expect(ff).to include('b')
+        expect(ff.size).to eq 2
+      end
+    end
   end
 end
