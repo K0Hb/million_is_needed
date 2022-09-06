@@ -9,7 +9,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe '.create_game_for_user!' do
-    context 'creating a game with valid parameters' do
+    context 'when creating a game with valid parameters' do
       it 'Game.create_game! new correct game' do
         generate_questions(60)
 
@@ -32,7 +32,7 @@ RSpec.describe Game, type: :model do
   end
 
   describe 'testing game mechanics' do
-    context 'answer is correct and the game continues' do
+    context 'when answer is correct and the game continues' do
       it 'game continues' do
         level = game_w_questions.current_level
         q = game_w_questions.current_game_question
@@ -47,7 +47,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'user takes the money and the game finished' do
+    context 'when user takes the money and the game finished' do
       it 'game finished' do
         q = game_w_questions.current_game_question
         game_w_questions.answer_current_question!(q.correct_answer_key)
@@ -123,9 +123,10 @@ RSpec.describe Game, type: :model do
   describe '#answer_current_question' do
     let(:q) { game_w_questions.current_game_question }
     let(:level) { game_w_questions.current_level }
-    context 'game is not stopped, the answer is correct' do
+    let(:answer) { game_w_questions.answer_current_question!(game_w_questions.current_game_question.correct_answer_key) }
+
+    context 'when game is not stopped, the answer is correct' do
       it 'answer correct' do
-        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
 
         expect(answer).to be_truthy
         expect(game_w_questions.current_level).to eq(1)
@@ -133,7 +134,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'game is stopped, the answer is incorrect' do
+    context 'when game is stopped, the answer is incorrect' do
       it 'answer uncorrect' do
         answer = game_w_questions.answer_current_question!('g')
 
@@ -143,10 +144,9 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'game is stopped, the time limit for the response has been exceeded' do
+    context 'when game is stopped, the time limit for the response has been exceeded' do
       it 'answer timout' do
         game_w_questions.created_at = 1.hour.ago
-        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
 
         expect(answer).to be false
         expect(game_w_questions.current_level).to eq(level)
@@ -154,7 +154,7 @@ RSpec.describe Game, type: :model do
       end
     end
 
-    context 'last answer to the question and receiving the final prize' do
+    context 'when last answer to the question and receiving the final prize' do
       it 'final answer and prize 1 million' do
         game_w_questions.current_level = Question::QUESTION_LEVELS.max
         answer = game_w_questions.answer_current_question!(q.correct_answer_key)
