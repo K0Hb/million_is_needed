@@ -10,7 +10,7 @@ RSpec.describe GamesController, type: :controller do
     before(:each) { sign_in user }
 
     context 'creates game' do
-      it 'finished -> false; user -> user; response -> redirect_to(game_path(game); flash -> true' do
+      it 'shows flash notice and redirect to new game' do
         generate_questions(15)
 
         post :create
@@ -25,7 +25,7 @@ RSpec.describe GamesController, type: :controller do
 
 
     context 'attempt to create second game' do
-      it 'finished -> false; game -> nil; flash -> true' do
+      it 'shows flash alert and redirect to actual game' do
         expect(game_w_questions.finished?).to be_falsey
 
         expect { post :create }.to change(Game, :count).by(0)
@@ -40,10 +40,11 @@ RSpec.describe GamesController, type: :controller do
 
   describe '#answer' do
     before(:each) { sign_in user }
+    let(:question) { game_w_questions.current_game_question }
 
     context 'answer correct'
-      it 'finished? -> false; current_level > 0; response -> redirect_to(game_path(game); flash -> empty' do
-        put :answer, id: game_w_questions.id, letter: game_w_questions.current_game_question.correct_answer_key
+      it 'dont shows flash alert and game continues' do
+        put :answer, id: game_w_questions.id, letter: question.correct_answer_key
         game = assigns(:game)
 
         expect(game.finished?).to be_falsey
@@ -53,8 +54,7 @@ RSpec.describe GamesController, type: :controller do
       end
 
     context 'answer wrong' do
-      it 'finished? - false; flash -> true' do
-        question = game_w_questions.current_game_question
+      it 'shows flash alert and finished game' do
         wrong_answer = (question.variants.keys - [question.correct_answer_key]).sample
 
         put :answer, id: game_w_questions.id, letter: wrong_answer
@@ -62,16 +62,16 @@ RSpec.describe GamesController, type: :controller do
 
         expect(game.finished?).to be true
         expect(response).to redirect_to user_path(user)
-        expect(flash.any?).to be true
+        expect(flash[:alert]).to be
       end
     end
   end
 
-  describe '#show game (user -> user)' do
+  describe '#show game (sign_in user)' do
     before(:each) { sign_in user }
 
     context 'user show self game' do
-      it 'status -> 200; response -> render_template(show), finished? -> false; user -> user' do
+      it 'render your game and game continues' do
         get :show, id: game_w_questions.id
         game = assigns(:game)
 
@@ -79,11 +79,12 @@ RSpec.describe GamesController, type: :controller do
         expect(response).to render_template('show')
         expect(game.finished?).to be_falsey
         expect(game.user).to eq(user)
+        expect(game.status).to eq(:in_progress)
       end
     end
 
     context 'user show alien game' do
-      it 'status -> 200; game.user -> user; finished? -> true; response -> render_template(show)' do
+      it 'shows flash alert and redirect root_path' do
         alien_game = FactoryGirl.create(:game_with_questions)
         get :show, id: alien_game.id
 
@@ -98,7 +99,7 @@ RSpec.describe GamesController, type: :controller do
     before(:each) { sign_in user }
 
     context 'takes money' do
-      it 'finished? -> true; prize -> 200; balance -> 200; response -> redirect_to(user_path(user), flash -> true' do
+      it 'shows flash warning, balacne user equal prize and redirect user page' do
         game_w_questions.update_attribute(:current_level, 2)
         put :take_money, id: game_w_questions.id
         game = assigns(:game)
@@ -116,7 +117,7 @@ RSpec.describe GamesController, type: :controller do
 
   describe 'group test anonymous user' do
     context '#show game' do
-      it 'status != 200; flash -> true' do
+      it 'shows flash aler and redirect log in page' do
         get :show, id: game_w_questions.id
 
         expect(response.status).not_to eq(200)
@@ -126,7 +127,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context '#create' do
-      it 'status != 200; flash -> true; game -> nil' do
+      it 'shows flash alert, redirect log in page and game dont create' do
         expect { post :create }.to change(Game, :count).by(0)
 
         game = assigns(:game)
@@ -139,7 +140,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context '#answer' do
-      it 'status != 200; flash -> true' do
+      it 'shows flash alert and redirect log in page' do
         put :answer, id: game_w_questions.id
 
         expect(response.status).not_to eq(200)
@@ -149,7 +150,7 @@ RSpec.describe GamesController, type: :controller do
     end
 
     context '#take_money' do
-      it 'status != 200; flash -> true' do
+      it 'shows flash alert and redirect log in page' do
         put :take_money, id: game_w_questions.id
 
         expect(response.status).not_to eq(200)
