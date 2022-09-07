@@ -113,11 +113,7 @@ RSpec.describe Game, type: :model do
       it 'previous_level equal level' do
         level = game_w_questions.current_level - 1
         expect(game_w_questions.previous_level).to eq level
-      end
-    end
 
-    context 'when dont correct work previous_level' do
-      it 'previous_level not equal level' do
         level = game_w_questions.current_level
         expect(game_w_questions.previous_level).not_to eq level
       end
@@ -170,6 +166,20 @@ RSpec.describe Game, type: :model do
         expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
         expect(user.balance).to eq prize
         expect(game_w_questions.status).to eq :won
+      end
+    end
+  end
+
+  describe '#current_game_question' do
+    context 'when current_game_question correct' do
+      it 'current_game_question equal first question' do
+        expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions.first
+      end
+    end
+
+    context 'when current_game_question not correct' do
+      it 'current_game_question not equal second question' do
+        expect(game_w_questions.current_game_question).to_not eq game_w_questions.game_questions.second
       end
     end
   end
