@@ -94,37 +94,68 @@ RSpec.describe GamesController, type: :controller do
       end
     end
 
-    context 'user uses audience help'do
-      it 'use audience help, redirect to game_path, game continues and help_hash has all keys answers' do
-        expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
-        expect(game_w_questions.audience_help_used).to be false
+    context 'user uses audience_help'do
+      let(:game) { assigns(:game) }
 
-        put :help, id: game_w_questions.id, help_type: :audience_help
-        game = assigns(:game)
+      context 'before audience help was used' do
+        it 'help_hash[:audience_hel] is empty and help :audience_help not used' do
+          expect(game_w_questions.current_game_question.help_hash[:audience_help]).not_to be
+          expect(game_w_questions.audience_help_used).to be false
+        end
+      end
 
-        expect(game.finished?).to be false
-        expect(game.audience_help_used).to be true
-        expect(game.current_game_question.help_hash[:audience_help]).to be
-        expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
-        expect(response).to redirect_to(game_path(game))
+      context 'after audience help was used' do
+        before { put :help, id: game_w_questions.id, help_type: :audience_help }
+
+        it 'game not finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'help audience_help is used' do
+          expect(game.audience_help_used).to be true
+        end
+
+        it 'audience_help is true and include message' do
+          expect(game.current_game_question.help_hash[:audience_help]).to be
+          expect(game.current_game_question.help_hash[:audience_help].keys).to contain_exactly('a', 'b', 'c', 'd')
+        end
+
+        it 'redirect true' do
+          expect(response).to redirect_to(game_path(game))
+        end
       end
     end
 
     context 'user uses fifty_fifty' do
-      it 'use fifty_fifty, redirect to game_path, game continues and help_hash has correct answer' do
-        correct_answer = game_w_questions.current_game_question.correct_answer_key
+      let(:correct_answer) { game_w_questions.current_game_question.correct_answer_key }
+      let(:game) { assigns(:game) }
 
-        expect(game_w_questions.current_game_question.help_hash[:fifty_fifty]).not_to be
-        expect(game_w_questions.fifty_fifty_used).to be false
+      context 'before fifty fifty was used' do
+        it 'help_hash[:fifrty_fifty] is empty and help fifrty_fifty not used' do
+          expect(game_w_questions.current_game_question.help_hash[:fifty_fifty]).not_to be
+          expect(game_w_questions.fifty_fifty_used).to be false
+        end
+      end
 
-        put :help, id: game_w_questions.id, help_type: :fifty_fifty
-        game = assigns(:game)
+      context 'after fifty fifty was used' do
+        before { put :help, id: game_w_questions.id, help_type: :fifty_fifty }
 
-        expect(game.finished?).to be false
-        expect(game.fifty_fifty_used).to be true
-        expect(game.current_game_question.help_hash[:fifty_fifty]).to be
-        expect(game.current_game_question.help_hash[:fifty_fifty]).to include(correct_answer)
-        expect(response).to redirect_to(game_path(game))
+        it 'game not finished' do
+          expect(game.finished?).to be false
+        end
+
+        it 'help fifty_fifty is used' do
+          expect(game.fifty_fifty_used).to be true
+        end
+
+        it 'help_hash is true and include message' do
+          expect(game.current_game_question.help_hash[:fifty_fifty]).to be
+          expect(game.current_game_question.help_hash[:fifty_fifty]).to include(correct_answer)
+        end
+
+        it 'redirect true' do
+          expect(response).to redirect_to(game_path(game))
+        end
       end
     end
   end
