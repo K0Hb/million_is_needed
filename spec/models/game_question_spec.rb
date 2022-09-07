@@ -30,6 +30,20 @@ RSpec.describe GameQuestion, type: :model do
     end
   end
 
+  describe '#correct_answer_key' do
+    context 'when key correct' do
+      it 'correct_answer_key equal "b" ' do
+        expect(game_question.correct_answer_key).to eq 'b'
+      end
+    end
+
+    context 'when key not correct' do
+      it 'correct_answer_key dont equal "b" ' do
+        expect(game_question.correct_answer_key).to_not eq 'c'
+      end
+    end
+  end
+
   describe "#level" do
     context 'check correct work level' do
       it "level correctly" do
