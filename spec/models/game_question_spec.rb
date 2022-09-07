@@ -6,7 +6,7 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe '#variants' do
-    context 'check return correct hash' do
+    context 'when variants equal correct hash' do
         it 'return eq hash' do
           expect(game_question.variants).to eq(
             'a' => game_question.question.answer2,
@@ -19,11 +19,13 @@ RSpec.describe GameQuestion, type: :model do
     end
 
   describe '#answer_correct?' do
-    context 'check correct work answer_correct?' do
+    context 'when answer correct' do
       it 'return true' do
         expect(game_question.answer_correct?('b')).to be true
       end
+    end
 
+    context 'when answer not correct' do
       it 'return false' do
         expect(game_question.answer_correct?('c')).to be false
       end
@@ -45,21 +47,29 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe "#level" do
-    context 'check correct work level' do
-      it "level correctly" do
+    context 'when correct work level' do
+      it "question level equeal correct level" do
         expect(game_question.level).to eq(game_question.question.level)
       end
+    end
 
-      it "level not correctly" do
+    context 'when not correct work level' do
+      it "question level not equeal correct level" do
         expect(game_question.level).not_to  eq(game_question.question.level - 1)
       end
     end
   end
 
   describe "#text" do
-    context 'check correct work text' do
-      it "text correctly" do
+    context 'when game_question.text correct' do
+      it "game_question.text equal correct text" do
         expect(game_question.text).to eq(game_question.question.text)
+      end
+    end
+
+    context 'when game_question.text not correct' do
+      it "game_question.text equal correct text" do
+        expect(game_question.text).to_not eq('not correct text')
       end
     end
   end
