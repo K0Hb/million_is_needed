@@ -179,21 +179,9 @@ RSpec.describe Game, type: :model do
         end
       end
     end
-
-    # context 'when last answer to the question and receiving the final prize' do
-    #   it 'final answer and prize 1 million' do
-
-    #     expect(answer).to be true
-    #     expect(game_w_questions.current_level).to eq(15)
-    #     expect(game_w_questions.finished?).to be true
-    #     expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
-    #     expect(user.balance).to eq prize
-    #     expect(game_w_questions.status).to eq :won
-    #   end
-    # end
   end
 
-  describe '#current_game_question' do
+  describe '#current_game_question's do
     context 'when current_game_question correct' do
       it 'current_game_question equal first question' do
         expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions.first
