@@ -24,6 +24,26 @@ RSpec.describe 'users/show', type: :view do
     end
   end
 
+  context 'alien log_in user dont watch link to edit password' do
+    before(:each) do
+      user = FactoryGirl.create(:user, name: 'Вася', email: 'mail@mail.ru', balance: 100)
+      user2 = FactoryGirl.create(:user, name: 'Вася_другой', email: 'mail_1@mail_1.ru', balance: 0)
+      sign_in user2
+
+      assign(:user, user)
+      assign(:games, [FactoryGirl.build_stubbed(:game, id: 1, created_at: Time.now, current_level: 1)])
+      render
+    end
+
+    it 'render :name ' do
+      expect(rendered).to match 'Вася'
+    end
+
+    it 'render link to edit password' do
+      expect(rendered).to_not match 'Сменить имя и пароль'
+    end
+  end
+
   context 'watch view not log_in user' do
     before(:each) do
       user = FactoryGirl.build_stubbed(:user, name: 'Вася-анонинм', email: 'mail@mail.ru', balance: 100)
