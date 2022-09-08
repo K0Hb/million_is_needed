@@ -9,8 +9,8 @@ RSpec.describe Game, type: :model do
   end
 
   describe '.create_game_for_user!' do
-    context 'when creating a game with valid parameters' do
-      it 'Game.create_game! new correct game' do
+    context 'with valid parameters' do
+      it 'works correctly' do
         generate_questions(60)
 
         game = nil
@@ -120,54 +120,77 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#answer_current_question' do
+  describe '#answer_current_question!' do
     let(:q) { game_w_questions.current_game_question }
     let(:level) { game_w_questions.current_level }
     let(:answer) { game_w_questions.answer_current_question!(game_w_questions.current_game_question.correct_answer_key) }
 
-    context 'when game is not stopped, the answer is correct' do
-      it 'answer correct' do
+    context 'when answer is correct' do
+      it 'game not stopped' do
 
         expect(answer).to be_truthy
         expect(game_w_questions.current_level).to eq(1)
         expect(game_w_questions.finished?).to be false
       end
+
+      context 'when it is the last question' do
+        before(:each) do
+          game_w_questions.current_level = Question::QUESTION_LEVELS.max
+          game_w_questions.answer_current_question!(q.correct_answer_key)
+        end
+
+        let(:prize) { game_w_questions.prize }
+
+        it 'max level' do
+          expect(game_w_questions.current_level).to eq(15)
+        end
+
+        it 'stops the game' do
+          expect(game_w_questions.finished?).to be true
+        end
+
+        it 'rewards with prize' do
+          expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
+          expect(user.balance).to eq prize
+        end
+
+        it 'sets correct status' do
+          expect(game_w_questions.status).to eq :won
+        end
+      end
     end
 
-    context 'when game is stopped, the answer is incorrect' do
-      it 'answer uncorrect' do
+    context 'when answer is incorrect' do
+      it 'game is stopped' do
         answer = game_w_questions.answer_current_question!('g')
 
         expect(answer).to be_falsey
         expect(game_w_questions.current_level).to eq(level)
         expect(game_w_questions.finished?).to be true
       end
-    end
 
-    context 'when game is stopped, the time limit for the response has been exceeded' do
-      it 'answer timout' do
-        game_w_questions.created_at = 1.hour.ago
+      context 'when timeout' do
+        it 'game is stopped' do
+          game_w_questions.created_at = 1.hour.ago
 
-        expect(answer).to be false
-        expect(game_w_questions.current_level).to eq(level)
-        expect(game_w_questions.finished?).to be true
+          expect(answer).to be false
+          expect(game_w_questions.current_level).to eq(level)
+          expect(game_w_questions.finished?).to be true
+        end
       end
     end
 
-    context 'when last answer to the question and receiving the final prize' do
-      it 'final answer and prize 1 million' do
-        game_w_questions.current_level = Question::QUESTION_LEVELS.max
-        answer = game_w_questions.answer_current_question!(q.correct_answer_key)
-        prize = game_w_questions.prize
+    # context 'when last answer to the question and receiving the final prize' do
+    #   it 'final answer and prize 1 million' do
 
-        expect(answer).to be true
-        expect(game_w_questions.current_level).to eq(15)
-        expect(game_w_questions.finished?).to be true
-        expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
-        expect(user.balance).to eq prize
-        expect(game_w_questions.status).to eq :won
-      end
-    end
+    #     expect(answer).to be true
+    #     expect(game_w_questions.current_level).to eq(15)
+    #     expect(game_w_questions.finished?).to be true
+    #     expect(prize).to eq Game::PRIZES[Question::QUESTION_LEVELS.max]
+    #     expect(user.balance).to eq prize
+    #     expect(game_w_questions.status).to eq :won
+    #   end
+    # end
   end
 
   describe '#current_game_question' do
