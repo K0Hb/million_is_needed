@@ -181,7 +181,7 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#current_game_question's do
+  describe '#current_game_question' do
     context 'when current_game_question correct' do
       it 'current_game_question equal first question' do
         expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions.first
