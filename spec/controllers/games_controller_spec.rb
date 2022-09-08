@@ -2,9 +2,9 @@ require 'rails_helper'
 require 'support/my_spec_helper'
 
 RSpec.describe GamesController, type: :controller do
-  let(:user) { FactoryGirl.create(:user) }
-  let(:admin) { FactoryGirl.create(:user, is_admin: true) }
-  let(:game_w_questions) { FactoryGirl.create(:game_with_questions, user: user) }
+  let(:user) { FactoryBot.create(:user) }
+  let(:admin) { FactoryBot.create(:user, is_admin: true) }
+  let(:game_w_questions) { FactoryBot.create(:game_with_questions, user: user) }
 
   describe '#create' do
     before(:each) { sign_in user }
@@ -85,7 +85,7 @@ RSpec.describe GamesController, type: :controller do
 
     context 'user show alien game' do
       it 'shows flash alert and redirect root_path' do
-        alien_game = FactoryGirl.create(:game_with_questions)
+        alien_game = FactoryBot.create(:game_with_questions)
         get :show, id: alien_game.id
 
         expect(response.status).not_to eq(200)

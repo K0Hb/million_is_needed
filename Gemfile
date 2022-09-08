@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2.10'
 
-gem 'devise', '~> 4.1.1'
+gem 'devise', '~>  4.5.0'
 gem 'devise-i18n'
 
 gem 'uglifier', '>= 1.3.0'
@@ -19,7 +19,7 @@ group :development, :test do
   gem 'capybara'
   gem 'launchy'
   gem 'rspec-rails', '~> 3.4'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'shoulda-matchers'
 end
 
@@ -27,5 +27,5 @@ group :production do
   # гем, улучшающий вывод логов на Heroku
   # https://devcenter.heroku.com/articles/getting-started-with-rails4#heroku-gems
   gem 'rails_12factor'
-  gem 'pg'
+  gem 'pg', '~> 0.21'
 end

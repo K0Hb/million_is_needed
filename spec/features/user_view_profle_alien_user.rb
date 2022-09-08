@@ -1,18 +1,18 @@
 require 'rails_helper'
 
 RSpec.feature 'user_views_profle_alien_user', type: :feature do
-  let(:user1) { FactoryGirl.create :user, name: 'Вася'}
-  let!(:user2) { FactoryGirl.create :user, name: 'Петя'}
+  let(:user1) { FactoryBot.create :user, name: 'Вася'}
+  let!(:user2) { FactoryBot.create :user, name: 'Петя'}
 
   let!(:games) do
     [
-      FactoryGirl.create(
+      FactoryBot.create(
       :game,
       user_id: user2.id,
       created_at: Time.now,
       current_level: 1,
     ),
-    FactoryGirl.create(
+    FactoryBot.create(
       :game,
       user_id: user2.id,
       created_at: Time.parse('2022.08.09, 9:00'),
@@ -20,7 +20,7 @@ RSpec.feature 'user_views_profle_alien_user', type: :feature do
       current_level: 5,
       prize: 1000
     ),
-    FactoryGirl.create(
+    FactoryBot.create(
       :game,
       user_id: user2.id,
       created_at: Time.parse('2022.08.09, 9:15'),
