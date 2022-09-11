@@ -2,10 +2,10 @@ require 'rails_helper'
 require 'support/my_spec_helper'
 
 RSpec.describe Game, type: :model do
-  let(:user) { FactoryBot.create(:user) }
+  let(:user) { create(:user) }
 
   let(:game_w_questions) do
-    FactoryBot.create(:game_with_questions, user: user)
+    create(:game_with_questions, user: user)
   end
 
   describe '.create_game_for_user!' do
