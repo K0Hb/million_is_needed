@@ -93,30 +93,16 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#level' do
-    context 'when correct work level' do
-      it 'question level equal ccurrent_level' do
-        level = game_w_questions.current_level
-        expect(game_w_questions.current_game_question.level).to eq level
-      end
-    end
-
-    context 'when dont correct work level' do
-      it 'question level not equal current_level' do
-        level = game_w_questions.current_level - 1
-        expect(game_w_questions.current_game_question.level).not_to eq level
-      end
+    it 'return actual level' do
+      level = game_w_questions.current_level
+      expect(game_w_questions.current_game_question.level).to eq level
     end
   end
 
   describe '#previous_level' do
-    context 'when correct work previous_level' do
-      it 'previous_level equal level' do
-        level = game_w_questions.current_level - 1
-        expect(game_w_questions.previous_level).to eq level
-
-        level = game_w_questions.current_level
-        expect(game_w_questions.previous_level).not_to eq level
-      end
+    it 'return actual previous_level' do
+      level = game_w_questions.current_level - 1
+      expect(game_w_questions.previous_level).to eq level
     end
   end
 
@@ -182,16 +168,8 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#current_game_question' do
-    context 'when current_game_question correct' do
-      it 'current_game_question equal first question' do
-        expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions.first
-      end
-    end
-
-    context 'when current_game_question not correct' do
-      it 'current_game_question not equal second question' do
-        expect(game_w_questions.current_game_question).to_not eq game_w_questions.game_questions.second
-      end
+    it 'return actual game question' do
+      expect(game_w_questions.current_game_question).to eq game_w_questions.game_questions.first
     end
   end
 end
