@@ -23,7 +23,7 @@ RSpec.describe GameQuestion, type: :model do
   end
 
   describe '#correct_answer_key' do
-    it 'reuturn "b" (correct key)' do
+    it 'reuturn correct key' do
       expect(game_question.correct_answer_key).to eq 'b'
     end
   end
